@@ -26,6 +26,7 @@ float convertRawAngleToDegrees(word newAngle)
     float retVal = newAngle * 0.087890625;
     return retVal;
 }
+
 void loop()
 {
     Serial.println(String(convertRawAngleToDegrees(ams5600.getRawAngle()), DEC));
