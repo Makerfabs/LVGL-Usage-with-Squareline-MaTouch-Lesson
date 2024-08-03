@@ -1,8 +1,8 @@
 #include <Wire.h>
 #include "AS5600.h"
 
-#define SDA_PIN 4//17
-#define SCL_PIN 5//18
+#define SDA_PIN 21//17
+#define SCL_PIN 22//18
 
 AMS_5600 ams5600;
 
@@ -47,7 +47,7 @@ float convertRawAngleToDegrees(word newAngle)
 }
 void loop()
 {
-    Serial.println(ams5600.getRawAngle(), DEC);
+    Serial.println(String(convertRawAngleToDegrees(ams5600.getRawAngle()), DEC));
 }
 
 //  -- END OF FILE --
