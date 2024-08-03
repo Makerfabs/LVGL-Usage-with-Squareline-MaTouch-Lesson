@@ -9,9 +9,6 @@
 #define SDA_PIN 17
 #define SCL_PIN 18
 
-int count=0;
-
-
 AMS_5600 ams5600;
 /*Don't forget to set Sketchbook location in File/Preferences to the path of your UI project (the parent foder of this INO file)*/
 
@@ -82,9 +79,9 @@ void my_touchpad_read (lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 void setup ()
 {
     Serial.begin(115200); /* prepare for possible serial debug */
+
     Wire.begin(SDA_PIN, SCL_PIN);
-    i2c_scan();
-    
+
     String LVGL_Arduino = "Hello Arduino! ";
     LVGL_Arduino += String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
 
@@ -134,27 +131,15 @@ void setup ()
 
         Serial.println( "Setup done" );
     }
-    
-    Serial.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> ");
-    if (ams5600.detectMagnet() == 0)
-    {
-        while (1)
-        {
-            if (ams5600.detectMagnet() == 1)
-            {
-                Serial.print("Current Magnitude: ");
-                Serial.println(ams5600.getMagnitude());
-                break;
-            }
-            else
-            {
-                Serial.println("Can not detect magnet");
-            }
-            delay(1000);
-        }
-    }
 }
 
+/*******************************************************
+/* Function: convertRawAngleToDegrees
+/* In: angle data from AMS_5600::getRawAngle
+/* Out: human readable degrees as float
+/* Description: takes the raw angle and calculates
+/* float value in degrees.
+/*******************************************************/
 float convertRawAngleToDegrees(word newAngle)
 {
     /* Raw data reports 0 - 4095 segments, which is 0.087890625 of a degree */
@@ -162,70 +147,10 @@ float convertRawAngleToDegrees(word newAngle)
     return retVal;
 }
 
-float getaverage(int a)
-{
-  int angle=0;
-  for(int i=0;i<a;i++)
-  {
-      angle = angle+convertRawAngleToDegrees(ams5600.getRawAngle()*10);
-      
-  }
-  return angle/a;
-}
-
 void loop ()
 {
     lv_timer_handler();
     delay(10); //together with LV_INDEV_DEF_READ_PERIOD it should be bigger than LV_DISP_DEF_REFR_PERIOD, to avoid button-press glitches (e.g. in Smart Gadget example)
-    //Serial.println(String(convertRawAngleToDegrees(ams5600.getRawAngle()), DEC));
-    Serial.print("average= ");
-    Serial.println(getaverage(10));
-    lv_img_set_angle(ui_Image1, getaverage(10));
-}
-
-void i2c_scan()
-{
-    byte error, address;
-    int nDevices;
-
-    static int s = 0;
-    Serial.print(s++);
-    Serial.println(". Scanning...");
-
-    nDevices = 0;
-    for (address = 1; address < 127; address++)
-    {
-        // The i2c_scanner uses the return value of
-        // the Write.endTransmisstion to see if
-        // a device did acknowledge to the address.
-        Wire.beginTransmission(address);
-        error = Wire.endTransmission();
-
-        if (error == 0)
-        {
-            Serial.print("I2C device found at address 0x");
-            if (address < 16)
-                Serial.print("0");
-            Serial.print(address, HEX);
-            Serial.println("  !");
-
-            nDevices++;
-        }
-        else if (error == 4)
-        {
-            Serial.print("Unknown error at address 0x");
-            if (address < 16)
-                Serial.print("0");
-            Serial.println(address, HEX);
-        }
-    }
-    if (nDevices == 0)
-        Serial.println("No I2C devices found\n");
-    else
-    {
-        Serial.print(">>>> Found total ");
-        ;
-        Serial.print(nDevices);
-        Serial.println(" devices\n");
-    }
+    Serial.println(String(convertRawAngleToDegrees(ams5600.getRawAngle()), DEC));
+    lv_img_set_angle(ui_Image1, convertRawAngleToDegrees(ams5600.getRawAngle())*10);
 }
