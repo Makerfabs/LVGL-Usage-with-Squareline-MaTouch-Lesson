@@ -12,25 +12,6 @@ void setup()
     Serial.begin(115200);
     Wire.begin(SDA_PIN, SCL_PIN);
     i2c_scan();
-
-    Serial.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> ");
-    if (ams5600.detectMagnet() == 0)
-    {
-        while (1)
-        {
-            if (ams5600.detectMagnet() == 1)
-            {
-                Serial.print("Current Magnitude: ");
-                Serial.println(ams5600.getMagnitude());
-                break;
-            }
-            else
-            {
-                Serial.println("Can not detect magnet");
-            }
-            delay(1000);
-        }
-    }
 }
 /*******************************************************
 /* Function: convertRawAngleToDegrees
