@@ -177,7 +177,7 @@ void loop ()
 {
     lv_timer_handler();
     delay(10); //together with LV_INDEV_DEF_READ_PERIOD it should be bigger than LV_DISP_DEF_REFR_PERIOD, to avoid button-press glitches (e.g. in Smart Gadget example)
-    Serial.println(String(convertRawAngleToDegrees(ams5600.getRawAngle()), DEC));
+    //Serial.println(String(convertRawAngleToDegrees(ams5600.getRawAngle()), DEC));
     Serial.print("average= ");
     Serial.println(getaverage(10));
     lv_img_set_angle(ui_Image1, getaverage(10));
